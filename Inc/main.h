@@ -32,6 +32,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim9;
 
 /* USER CODE END Includes */
 
@@ -76,6 +78,8 @@ void Error_Handler(void);
 #define TURRET_P3_GPIO_Port GPIOB
 #define TURRET_P4_Pin GPIO_PIN_13
 #define TURRET_P4_GPIO_Port GPIOB
+#define ENABLED_Pin GPIO_PIN_7
+#define ENABLED_GPIO_Port GPIOC
 #define TOOL_CHANGE_READY_Pin GPIO_PIN_8
 #define TOOL_CHANGE_READY_GPIO_Port GPIOC
 #define TOOL_CHANGE_Pin GPIO_PIN_9
@@ -96,8 +100,10 @@ void Error_Handler(void);
 #define TOOL_SEL_7_GPIO_Port GPIOA
 #define TOOL_SEL_8_Pin GPIO_PIN_15
 #define TOOL_SEL_8_GPIO_Port GPIOA
-#define LED_BLUE_Pin GPIO_PIN_6
-#define LED_BLUE_GPIO_Port GPIOB
+#define LED_LOCK_Pin GPIO_PIN_6
+#define LED_LOCK_GPIO_Port GPIOB
+#define LED_PWM_Pin GPIO_PIN_7
+#define LED_PWM_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

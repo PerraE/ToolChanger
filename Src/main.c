@@ -95,10 +95,8 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
+  InitApp();
 
-  //HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
-  uint16_t pwm_value = 0;
-  uint16_t step = 0;
   /* USER CODE END 2 */
  
  
@@ -107,16 +105,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_SET);
-//	  HAL_Delay(1000);
-//	  HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET);
-//	  HAL_Delay(1000);
 
-	  HAL_Delay(100);
-	  if(pwm_value == 0) step = 100;
-	  if(pwm_value == 2000) step = -100;	// PWM period is 20ms, the counter should be set to 2000-1
-	  pwm_value += step;
-	  user_pwm_setvalue(pwm_value);
+	  MainLoop();
 
     /* USER CODE END WHILE */
 
@@ -209,7 +199,7 @@ static void MX_TIM4_Init(void)
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
@@ -217,6 +207,7 @@ static void MX_TIM4_Init(void)
   /* USER CODE BEGIN TIM4_Init 2 */
 
   /* USER CODE END TIM4_Init 2 */
+  HAL_TIM_MspPostInit(&htim4);
 
 }
 
@@ -240,11 +231,11 @@ static void MX_TIM9_Init(void)
 
   /* USER CODE END TIM9_Init 1 */
   htim9.Instance = TIM9;
-  htim9.Init.Prescaler = 40000;
+  htim9.Init.Prescaler = 160-1;
   htim9.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim9.Init.Period = 500;
+  htim9.Init.Period = 2000-1;
   htim9.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim9) != HAL_OK)
   {
     Error_Handler();
@@ -267,7 +258,7 @@ static void MX_TIM9_Init(void)
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim9, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
@@ -300,7 +291,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(TOOL_CHANGE_READY_GPIO_Port, TOOL_CHANGE_READY_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_BLUE_GPIO_Port, LED_BLUE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_LOCK_GPIO_Port, LED_LOCK_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : BUTTON_Pin TOOL_SEL_1_Pin TOOL_SEL_2_Pin TOOL_SEL_3_Pin 
                            TOOL_SEL_4_Pin TOOL_SEL_5_Pin TOOL_SEL_6_Pin TOOL_SEL_7_Pin 
@@ -331,6 +322,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : ENABLED_Pin TOOL_CHANGE_Pin */
+  GPIO_InitStruct.Pin = ENABLED_Pin|TOOL_CHANGE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pin : TOOL_CHANGE_READY_Pin */
   GPIO_InitStruct.Pin = TOOL_CHANGE_READY_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -338,33 +335,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(TOOL_CHANGE_READY_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : TOOL_CHANGE_Pin */
-  GPIO_InitStruct.Pin = TOOL_CHANGE_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(TOOL_CHANGE_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LED_BLUE_Pin */
-  GPIO_InitStruct.Pin = LED_BLUE_Pin;
+  /*Configure GPIO pin : LED_LOCK_Pin */
+  GPIO_InitStruct.Pin = LED_LOCK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_BLUE_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_LOCK_GPIO_Port, &GPIO_InitStruct);
 
 }
 
 /* USER CODE BEGIN 4 */
-void user_pwm_setvalue(uint16_t value)
-{
-    TIM_OC_InitTypeDef sConfigOC;
 
-    sConfigOC.OCMode = TIM_OCMODE_PWM1;
-    sConfigOC.Pulse = value;
-    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-    HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
-}
 /* USER CODE END 4 */
 
 /**
