@@ -35,6 +35,8 @@ extern "C" {
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim9;
 
+ADC_HandleTypeDef hadc;
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -62,6 +64,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define ENC_1_Pin GPIO_PIN_0
+#define ENC_1_GPIO_Port GPIOC
+#define ENC_2_Pin GPIO_PIN_1
+#define ENC_2_GPIO_Port GPIOC
+#define ENC_3_Pin GPIO_PIN_2
+#define ENC_3_GPIO_Port GPIOC
+#define ENC_4_Pin GPIO_PIN_3
+#define ENC_4_GPIO_Port GPIOC
 #define BUTTON_Pin GPIO_PIN_0
 #define BUTTON_GPIO_Port GPIOA
 #define MOTOR_DIR_Pin GPIO_PIN_1
@@ -78,8 +88,8 @@ void Error_Handler(void);
 #define TURRET_P3_GPIO_Port GPIOB
 #define TURRET_P4_Pin GPIO_PIN_13
 #define TURRET_P4_GPIO_Port GPIOB
-#define ENABLED_Pin GPIO_PIN_7
-#define ENABLED_GPIO_Port GPIOC
+#define ENABLE_Pin GPIO_PIN_7
+#define ENABLE_GPIO_Port GPIOC
 #define TOOL_CHANGE_READY_Pin GPIO_PIN_8
 #define TOOL_CHANGE_READY_GPIO_Port GPIOC
 #define TOOL_CHANGE_Pin GPIO_PIN_9

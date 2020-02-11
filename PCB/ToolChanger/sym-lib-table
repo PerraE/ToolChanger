@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name Toolchanger)(type Legacy)(uri C:/STM32workspace/ToolChanger/PCB/ToolChanger/Toolchanger.lib)(options "")(descr ""))
+)
