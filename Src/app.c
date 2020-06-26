@@ -227,6 +227,7 @@ void ForwardTurret( void )
 		}
 		NewTurretState = REVERSE;
 	}
+	// If tool already selected, lock turret again
 	else
 	{
 		NewTurretState = LOCK;
@@ -265,9 +266,9 @@ void UnlockTurret( void )
 	user_pwm_setvalue(0);
 }
 
-void SetTurretStatusLocked(uint8_t ready)
+void SetTurretStatusLocked(uint8_t locked)
 {
-	if(ready)
+	if(!locked)
 	{
 		HAL_GPIO_WritePin(LED_LOCK_GPIO_Port, LED_LOCK_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(TOOL_CHANGE_READY_GPIO_Port, TOOL_CHANGE_READY_Pin, GPIO_PIN_RESET);
