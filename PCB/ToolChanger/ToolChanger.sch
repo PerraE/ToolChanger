@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:ToolChanger-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -750,4 +751,30 @@ F 3 "~" H 2600 6900 50  0001 C CNN
 	1    2600 6900
 	1    0    0    -1  
 $EndComp
+Text Notes 1000 1550 0    50   ~ 0
+Enable ->
+Text Notes 550  1650 0    50   ~ 0
+Tool Change ready <-
+Text Notes 800  1750 0    50   ~ 0
+Tool Change ->
+Text Notes 950  1850 0    50   ~ 0
+Tool 01 ->
+Text Notes 950  1950 0    50   ~ 0
+Tool 02 ->
+Text Notes 950  2050 0    50   ~ 0
+Tool 03 ->
+Text Notes 950  2150 0    50   ~ 0
+Tool 04 ->
+Text Notes 950  2250 0    50   ~ 0
+Tool 05 ->
+Text Notes 950  3250 0    50   ~ 0
+Tool 06 ->
+Text Notes 950  3050 0    50   ~ 0
+Tool 07 ->
+Text Notes 950  2850 0    50   ~ 0
+Tool 08 ->
+Text Notes 850  2450 0    50   ~ 0
+Does not work!
+Text Notes 850  2650 0    50   ~ 0
+Does not work!
 $EndSCHEMATC

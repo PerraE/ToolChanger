@@ -104,12 +104,12 @@ void Error_Handler(void);
 #define TOOL_SEL_4_GPIO_Port GPIOA
 #define TOOL_SEL_5_Pin GPIO_PIN_12
 #define TOOL_SEL_5_GPIO_Port GPIOA
-#define TOOL_SEL_6_Pin GPIO_PIN_13
-#define TOOL_SEL_6_GPIO_Port GPIOA
-#define TOOL_SEL_7_Pin GPIO_PIN_14
-#define TOOL_SEL_7_GPIO_Port GPIOA
 #define TOOL_SEL_8_Pin GPIO_PIN_15
 #define TOOL_SEL_8_GPIO_Port GPIOA
+#define TOOL_SEL_7_Pin GPIO_PIN_10
+#define TOOL_SEL_7_GPIO_Port GPIOC
+#define TOOL_SEL_6_Pin GPIO_PIN_11
+#define TOOL_SEL_6_GPIO_Port GPIOC
 #define LED_LOCK_Pin GPIO_PIN_6
 #define LED_LOCK_GPIO_Port GPIOB
 #define LED_PWM_Pin GPIO_PIN_7

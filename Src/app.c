@@ -12,9 +12,9 @@
 #define TURRET_FORWARD_DIR  	GPIO_PIN_RESET	// Direction
 #define TURRET_REVERSE_DIR 		GPIO_PIN_SET
 #define TURRET_FORWARD_POWER  	2000		// Max power = 2000.
-#define TURRET_REVERSE_POWER 	1000		// Selected lock power = 10% of max
-#define TURRET_LOCK_POWER 		200			// Selected lock power = 10% of max
-#define LOCKTHRESHOLD			1500		// Threshold current while reverse to find lock position
+#define TURRET_REVERSE_POWER 	500		// Selected lock power = 50% of max
+#define TURRET_LOCK_POWER 		150			// Selected lock power = 5% of max
+#define LOCKTHRESHOLD			3000		// Threshold current while reverse to find lock position
 #define false 0
 #define true 1
 
@@ -23,13 +23,14 @@ typedef enum
   IDLE = 0,
   FORWARD,
   REVERSE,
-  LOCK
+  LOCK,
+  WAIT
 }_Turret_State;
 
 _Turret_State TurretState;
 _Turret_State NewTurretState;
 
-
+uint32_t DelayTurret;
 //
 // Init buffers for comunication
 //
@@ -48,24 +49,42 @@ void MainLoop( void )
 
 	if(TurretState != NewTurretState)
 	{
-	  switch (TurretState) {
+	  switch (NewTurretState) {
 		case IDLE:
 			UnlockTurret();
+			TurretState = IDLE;
 			break;
 		case FORWARD:
 			ForwardTurret();
+			TurretState = FORWARD;
 			break;
 		case REVERSE:
 			ReverseTurret();
+			TurretState = REVERSE;
 			break;
 		case LOCK:
 			LockTurret();
+			TurretState = LOCK;
+			break;
+		case WAIT:
+			WaitOverTravel();
 			break;
 	  }
-	  TurretState = NewTurretState;
+
 	}
 }
 
+// Dummyfunktion då alla typer av delay inte fungerar!!!
+void WaitOverTravel()
+
+{
+	DelayTurret ++;
+	if(DelayTurret > 20000)
+	{
+		user_pwm_setvalue(0);
+		NewTurretState = REVERSE;
+	}
+}
 void CheckIfEnabled( void )
 {
 	GPIO_PinState state;
@@ -118,45 +137,45 @@ uint8_t GetCurrentTool( void )
 
 	if(HAL_GPIO_ReadPin(ENC_1_GPIO_Port, ENC_1_Pin))
 	{
-		value = value || 0b0001;
+		value = value + 1;
 	}
 	if(HAL_GPIO_ReadPin(ENC_2_GPIO_Port, ENC_2_Pin))
 	{
-		value = value || 0b0010;
+		value = value + 2;
 	}
 	if(HAL_GPIO_ReadPin(ENC_3_GPIO_Port, ENC_3_Pin))
 	{
-		value = value || 0b0100;
+		value = value + 4;
 	}
 	if(HAL_GPIO_ReadPin(ENC_4_GPIO_Port, ENC_4_Pin))
 	{
-		value = value || 0b1000;
+		value = value + 8;
 	}
 
 	switch (value)
 	{
-		case 0b1000:
+		case 2:
 			toolNo = 1;
 			break;
-		case 0b1100:
+		case 6:
 			toolNo = 2;
 			break;
-		case 0b0100:
+		case 4:
 			toolNo = 3;
 			break;
-		case 0b0110:
+		case 12:
 			toolNo = 4;
 			break;
-		case 0b0010:
+		case 8:
 			toolNo = 5;
 			break;
-		case 0b0011:
+		case 9:
 			toolNo = 6;
 			break;
-		case 0b0001:
+		case 1:
 			toolNo = 7;
 			break;
-		case 0b1001:
+		case 3:
 			toolNo = 8;
 			break;
 	}
@@ -210,7 +229,7 @@ void ForwardTurret( void )
 {
 
 	uint8_t CurrentTool;
-	uint8_t SelectedTool;
+	volatile uint8_t SelectedTool;
 
 	CurrentTool = GetCurrentTool();
 	SelectedTool = GetSelectedTool();
@@ -225,7 +244,10 @@ void ForwardTurret( void )
 		{
 			CurrentTool = GetCurrentTool();
 		}
-		NewTurretState = REVERSE;
+		NewTurretState = WAIT;
+		DelayTurret = 0;
+
+
 	}
 	// If tool already selected, lock turret again
 	else
@@ -239,14 +261,22 @@ void ReverseTurret( void )
 
 	__IO uint32_t ADCValue=0;
 
-	HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, TURRET_REVERSE_DIR);
-	user_pwm_setvalue(TURRET_LOCK_POWER);
 
+	//
+
+	HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, TURRET_REVERSE_DIR);
+	HAL_Delay(100);
+	user_pwm_setvalue(TURRET_REVERSE_POWER);
+	HAL_Delay(100);
 	while(ADCValue < LOCKTHRESHOLD)
-    if (HAL_ADC_PollForConversion(&hadc, 1000000) == HAL_OK)
+
     {
-        ADCValue = HAL_ADC_GetValue(&hadc);
+		HAL_ADC_Start(&hadc);
+		HAL_ADC_PollForConversion(&hadc, 5);
+		ADCValue = HAL_ADC_GetValue(&hadc);
     }
+	user_pwm_setvalue(TURRET_LOCK_POWER);
+	NewTurretState = LOCK;
 }
 
 

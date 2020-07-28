@@ -41,10 +41,10 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-//ADC_HandleTypeDef hadc;
-//
-//TIM_HandleTypeDef htim4;
-//TIM_HandleTypeDef htim9;
+ADC_HandleTypeDef hadc;
+
+TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim9;
 
 /* USER CODE BEGIN PV */
 
@@ -179,17 +179,18 @@ static void MX_ADC_Init(void)
   hadc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
   hadc.Init.Resolution = ADC_RESOLUTION_12B;
   hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   hadc.Init.LowPowerAutoWait = ADC_AUTOWAIT_DISABLE;
   hadc.Init.LowPowerAutoPowerOff = ADC_AUTOPOWEROFF_DISABLE;
   hadc.Init.ChannelsBank = ADC_CHANNELS_BANK_A;
   hadc.Init.ContinuousConvMode = DISABLE;
   hadc.Init.NbrOfConversion = 1;
-  hadc.Init.DiscontinuousConvMode = DISABLE;
+  hadc.Init.DiscontinuousConvMode = ENABLE;
+  hadc.Init.NbrOfDiscConversion = 1;
   hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc.Init.DMAContinuousRequests = DISABLE;
+  hadc.Init.DMAContinuousRequests = ENABLE;
   if (HAL_ADC_Init(&hadc) != HAL_OK)
   {
     Error_Handler();
@@ -357,11 +358,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : BUTTON_Pin TOOL_SEL_1_Pin TOOL_SEL_2_Pin TOOL_SEL_3_Pin 
-                           TOOL_SEL_4_Pin TOOL_SEL_5_Pin TOOL_SEL_6_Pin TOOL_SEL_7_Pin 
-                           TOOL_SEL_8_Pin */
+                           TOOL_SEL_4_Pin TOOL_SEL_5_Pin TOOL_SEL_8_Pin */
   GPIO_InitStruct.Pin = BUTTON_Pin|TOOL_SEL_1_Pin|TOOL_SEL_2_Pin|TOOL_SEL_3_Pin 
-                          |TOOL_SEL_4_Pin|TOOL_SEL_5_Pin|TOOL_SEL_6_Pin|TOOL_SEL_7_Pin 
-                          |TOOL_SEL_8_Pin;
+                          |TOOL_SEL_4_Pin|TOOL_SEL_5_Pin|TOOL_SEL_8_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -385,8 +384,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : ENABLE_Pin TOOL_CHANGE_Pin */
-  GPIO_InitStruct.Pin = ENABLE_Pin|TOOL_CHANGE_Pin;
+  /*Configure GPIO pins : ENABLE_Pin TOOL_CHANGE_Pin TOOL_SEL_7_Pin TOOL_SEL_6_Pin */
+  GPIO_InitStruct.Pin = ENABLE_Pin|TOOL_CHANGE_Pin|TOOL_SEL_7_Pin|TOOL_SEL_6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
