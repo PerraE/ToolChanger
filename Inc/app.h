@@ -11,5 +11,6 @@
 
 void InitApp( void );
 void MainLoop( void );
+uint8_t CheckIfEnabled( void );
 
 #endif /* APP_H_ */

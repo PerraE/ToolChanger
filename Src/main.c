@@ -224,7 +224,6 @@ static void MX_TIM4_Init(void)
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
 
   /* USER CODE BEGIN TIM4_Init 1 */
 
@@ -244,28 +243,15 @@ static void MX_TIM4_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM4_Init 2 */
 
   /* USER CODE END TIM4_Init 2 */
-  HAL_TIM_MspPostInit(&htim4);
 
 }
 
@@ -349,7 +335,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(TOOL_CHANGE_READY_GPIO_Port, TOOL_CHANGE_READY_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_LOCK_GPIO_Port, LED_LOCK_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED_LOCK_Pin|LED_ENABLED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : ENC_1_Pin ENC_2_Pin ENC_3_Pin ENC_4_Pin */
   GPIO_InitStruct.Pin = ENC_1_Pin|ENC_2_Pin|ENC_3_Pin|ENC_4_Pin;
@@ -397,12 +383,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(TOOL_CHANGE_READY_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LED_LOCK_Pin */
-  GPIO_InitStruct.Pin = LED_LOCK_Pin;
+  /*Configure GPIO pins : LED_LOCK_Pin LED_ENABLED_Pin */
+  GPIO_InitStruct.Pin = LED_LOCK_Pin|LED_ENABLED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_LOCK_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 

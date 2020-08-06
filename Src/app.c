@@ -12,7 +12,7 @@
 #define TURRET_FORWARD_DIR  	GPIO_PIN_RESET	// Direction
 #define TURRET_REVERSE_DIR 		GPIO_PIN_SET
 #define TURRET_FORWARD_POWER  	2000		// Max power = 2000.
-#define TURRET_REVERSE_POWER 	500		// Selected lock power = 50% of max
+#define TURRET_REVERSE_POWER 	700			// Selected lock power = 50% of max
 #define TURRET_LOCK_POWER 		150			// Selected lock power = 5% of max
 #define LOCKTHRESHOLD			3000		// Threshold current while reverse to find lock position
 #define false 0
@@ -44,33 +44,35 @@ void InitApp( void )
 void MainLoop( void )
 {
 
-	CheckIfEnabled();
-	CheckNewTool();
-
-	if(TurretState != NewTurretState)
+	if(CheckIfEnabled())
 	{
-	  switch (NewTurretState) {
-		case IDLE:
-			UnlockTurret();
-			TurretState = IDLE;
-			break;
-		case FORWARD:
-			ForwardTurret();
-			TurretState = FORWARD;
-			break;
-		case REVERSE:
-			ReverseTurret();
-			TurretState = REVERSE;
-			break;
-		case LOCK:
-			LockTurret();
-			TurretState = LOCK;
-			break;
-		case WAIT:
-			WaitOverTravel();
-			break;
-	  }
+		CheckNewTool();
 
+		if(TurretState != NewTurretState)
+		{
+		  switch (NewTurretState)
+		  {
+			case IDLE:
+				UnlockTurret();
+				TurretState = IDLE;
+				break;
+			case FORWARD:
+				ForwardTurret();
+				TurretState = FORWARD;
+				break;
+			case REVERSE:
+				ReverseTurret();
+				TurretState = REVERSE;
+				break;
+			case LOCK:
+				LockTurret();
+				TurretState = LOCK;
+				break;
+			case WAIT:
+				WaitOverTravel();
+				break;
+		  }
+		}
 	}
 }
 
@@ -79,20 +81,26 @@ void WaitOverTravel()
 
 {
 	DelayTurret ++;
-	if(DelayTurret > 20000)
+	if(DelayTurret > 17000)
 	{
 		user_pwm_setvalue(0);
 		NewTurretState = REVERSE;
 	}
 }
-void CheckIfEnabled( void )
+
+uint8_t CheckIfEnabled( void )
 {
 	GPIO_PinState state;
+
+	uint8_t isEnabled;
 
 	state = HAL_GPIO_ReadPin(ENABLE_GPIO_Port, ENABLE_Pin);
 	if(state == GPIO_PIN_RESET)
 	{
 		NewTurretState = IDLE;
+		isEnabled = 0;
+		UnlockTurret();
+		HAL_GPIO_WritePin(LED_ENABLED_GPIO_Port, LED_ENABLED_Pin, 0);
 	}
 	else
 	{
@@ -100,7 +108,10 @@ void CheckIfEnabled( void )
 		{
 			NewTurretState = LOCK;
 		}
+		isEnabled = 1;
+		HAL_GPIO_WritePin(LED_ENABLED_GPIO_Port, LED_ENABLED_Pin, 1);
 	}
+	return isEnabled;
 }
 
 void CheckNewTool( void )
@@ -243,6 +254,11 @@ void ForwardTurret( void )
 		while(SelectedTool != CurrentTool)
 		{
 			CurrentTool = GetCurrentTool();
+			if(!CheckIfEnabled)
+			{
+				NewTurretState = WAIT;
+				DelayTurret = 0;
+			}
 		}
 		NewTurretState = WAIT;
 		DelayTurret = 0;
@@ -319,8 +335,8 @@ void user_pwm_setvalue(uint16_t value)
     sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
     sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 
-    HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+//    HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2);
+//    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
 
     HAL_TIM_PWM_ConfigChannel(&htim9, &sConfigOC, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);

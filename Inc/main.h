@@ -112,8 +112,8 @@ void Error_Handler(void);
 #define TOOL_SEL_6_GPIO_Port GPIOC
 #define LED_LOCK_Pin GPIO_PIN_6
 #define LED_LOCK_GPIO_Port GPIOB
-#define LED_PWM_Pin GPIO_PIN_7
-#define LED_PWM_GPIO_Port GPIOB
+#define LED_ENABLED_Pin GPIO_PIN_7
+#define LED_ENABLED_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
