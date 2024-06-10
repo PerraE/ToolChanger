@@ -1360,10 +1360,10 @@ static HAL_StatusTypeDef RCC_SetFlashLatencyFromMSIRange(uint32_t MSIrange)
     }
 
     /* Check if need to set latency 1 only for Range 3 & HCLK = 4MHz */
-    if((vos == PWR_REGULATOR_VOLTAGE_SCALE3) && (MSIrange == RCC_MSIRANGE_6))
-    {
-      latency = FLASH_LATENCY_1; /* 1WS */
-    }
+//    if((vos == PWR_REGULATOR_VOLTAGE_SCALE3) && (MSIrange == RCC_MSIRANGE_6))
+//    {
+//      latency = FLASH_LATENCY_1; /* 1WS */
+//    }
   }
 
   __HAL_FLASH_SET_LATENCY(latency);

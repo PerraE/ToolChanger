@@ -38,7 +38,7 @@ void InitApp( void )
 {
 	TurretState = IDLE;
 	NewTurretState = IDLE;
-	HAL_ADC_Start(&hadc);
+	//HAL_ADC_Start(&hadc);
 	UnlockTurret();
 }
 void MainLoop( void )
@@ -76,14 +76,14 @@ void MainLoop( void )
 	}
 }
 
-// Dummyfunktion då alla typer av delay inte fungerar!!!
+// Dummyfunktion dï¿½ alla typer av delay inte fungerar!!!
 void WaitOverTravel()
 
 {
 	DelayTurret ++;
 	if(DelayTurret > 17000)
 	{
-		user_pwm_setvalue(0);
+		SetCurentLimit(0);
 		NewTurretState = REVERSE;
 	}
 }
@@ -249,7 +249,7 @@ void ForwardTurret( void )
 	if(SelectedTool != CurrentTool)
 	{
 		HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, TURRET_FORWARD_DIR);
-		user_pwm_setvalue(TURRET_FORWARD_POWER);
+		SetCurentLimit(0);
 		SetTurretStatusLocked(false);
 		while(SelectedTool != CurrentTool)
 		{
@@ -282,16 +282,16 @@ void ReverseTurret( void )
 
 	HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, TURRET_REVERSE_DIR);
 	HAL_Delay(100);
-	user_pwm_setvalue(TURRET_REVERSE_POWER);
-	HAL_Delay(100);
-	while(ADCValue < LOCKTHRESHOLD)
-
-    {
-		HAL_ADC_Start(&hadc);
-		HAL_ADC_PollForConversion(&hadc, 5);
-		ADCValue = HAL_ADC_GetValue(&hadc);
-    }
-	user_pwm_setvalue(TURRET_LOCK_POWER);
+	SetCurentLimit(1);
+	HAL_Delay(1000);
+//	while(ADCValue < LOCKTHRESHOLD)
+//
+//    {
+//		//HAL_ADC_Start(&hadc);
+//		//HAL_ADC_PollForConversion(&hadc, 5);
+//		//ADCValue = HAL_ADC_GetValue(&hadc);
+//    }
+//	SetCurentLimit(1);
 	NewTurretState = LOCK;
 }
 
@@ -300,7 +300,7 @@ void LockTurret( void )
 {
 
 	HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, TURRET_REVERSE_DIR);
-	user_pwm_setvalue(TURRET_LOCK_POWER);
+	SetCurentLimit(1);
 	SetTurretStatusLocked(true);
 
 }
@@ -309,7 +309,8 @@ void UnlockTurret( void )
 {
 	HAL_GPIO_WritePin(MOTOR_DIR_GPIO_Port, MOTOR_DIR_Pin, TURRET_REVERSE_DIR);
 	SetTurretStatusLocked(false);
-	user_pwm_setvalue(0);
+//	SetCurentLimit(0);
+	HAL_GPIO_WritePin(MOTOR_ONOFF_GPIO_Port, MOTOR_ONOFF_Pin, GPIO_PIN_RESET);
 }
 
 void SetTurretStatusLocked(uint8_t locked)
@@ -326,19 +327,18 @@ void SetTurretStatusLocked(uint8_t locked)
 	}
 }
 
-void user_pwm_setvalue(uint16_t value)
+void SetCurentLimit(uint8_t value)
 {
-    TIM_OC_InitTypeDef sConfigOC;
 
-    sConfigOC.OCMode = TIM_OCMODE_PWM1;
-    sConfigOC.Pulse = value;
-    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	if(value)
+	{
+		HAL_GPIO_WritePin(MOTOR_CURENT_GPIO_Port, MOTOR_CURENT_Pin, GPIO_PIN_SET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(MOTOR_CURENT_GPIO_Port, MOTOR_CURENT_Pin, GPIO_PIN_RESET);
+	}
 
-//    HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2);
-//    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
-
-    HAL_TIM_PWM_ConfigChannel(&htim9, &sConfigOC, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);
+	HAL_GPIO_WritePin(MOTOR_ONOFF_GPIO_Port, MOTOR_ONOFF_Pin, GPIO_PIN_SET);
 
 }

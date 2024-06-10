@@ -32,10 +32,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-TIM_HandleTypeDef htim4;
-TIM_HandleTypeDef htim9;
+extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim9;
 
-ADC_HandleTypeDef hadc;
+//extern ADC_HandleTypeDef hadc;
 
 /* USER CODE END Includes */
 
@@ -76,9 +76,9 @@ void Error_Handler(void);
 #define BUTTON_GPIO_Port GPIOA
 #define MOTOR_DIR_Pin GPIO_PIN_1
 #define MOTOR_DIR_GPIO_Port GPIOA
-#define MOTOR_PWM_Pin GPIO_PIN_2
-#define MOTOR_PWM_GPIO_Port GPIOA
-#define MOTOR_CURENT_Pin GPIO_PIN_3
+#define MOTOR_ONOFF_Pin GPIO_PIN_2
+#define MOTOR_ONOFF_GPIO_Port GPIOA
+#define MOTOR_CURENT_Pin GPIO_PIN_3			// Set relay with resistor
 #define MOTOR_CURENT_GPIO_Port GPIOA
 #define TURRET_P1_Pin GPIO_PIN_10
 #define TURRET_P1_GPIO_Port GPIOB
